@@ -1,23 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.scss";
+import { vardata } from './data';
+import { Row } from "./row.js";
+import { Header } from "./Header.js";
+import {useState , useEffect} from "react";
 
 function App() {
+  var [data, setData] = useState(null);
+  
+  useEffect(() => {
+    fetch(
+      "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false"
+    )
+      .then((res) => res.json())
+      .then((xata) => {
+       setData(xata);
+      }).catch((error) => alert("exhausted Limit , spend some money accio guys"));
+  }, [data]);
+
+  // var data = vardata;
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {data ? (
+        <table>
+          <Header />
+          {data.map((ele, index) => {
+            return <Row className="row" data={ele} index={index} />;
+          })}
+        </table>
+      ) : (
+        <h1>Loading....</h1>
+      )}
     </div>
   );
 }
